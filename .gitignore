@@ -1,0 +1,8 @@
+*.out
+webserver
+*.o
+last
+.vscode
+noactive
+resources
+test_presure/
