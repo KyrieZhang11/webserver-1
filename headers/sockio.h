@@ -1,3 +1,10 @@
+/**
+ * 常用的事件处理函数
+ * 对文件描述符的操作
+ * 信号捕捉
+ * 主线程逻辑
+ */
+
 #ifndef SOCKIO_H
 #define SOCKIO_H    1
 
@@ -14,8 +21,6 @@
 
 #define MAX_FD              65536       // 最大的文件描述符个数
 #define MAX_EVENT_NUMBER    10000       // 监听的最大的事件数量
-
-
 
 // 设置文件描述符非阻塞
 void setnonblocking( int fd );

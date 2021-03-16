@@ -94,14 +94,14 @@ void http_conn::process() {
     modfd( epollfd, sockfd, EPOLLOUT);
 }
 
-http_conn::HTTP_CODE http_conn::process_read() {
+http_conn::HTTP_CODE http_conn::process_read() { 
     LINE_STATUS line_status = LINE_OK;
     HTTP_CODE ret = NO_REQUEST;
     // 一行数据
     char* text;
     while (((check_state == CHECK_STATE_CONTENT) && (line_status == LINE_OK))
                 || ((line_status = parse_line()) == LINE_OK)) {
-        /** 解析到了头部的一行数据或者解析到了内容
+        /** 解析到了HTTP报文头部的一行数据或者解析到了报文内容
          *  检查完协议头部以后line_status的状态不会改变
         **/
         // 获取一行数据

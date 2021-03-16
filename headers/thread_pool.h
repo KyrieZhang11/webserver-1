@@ -36,7 +36,8 @@ public:
 };
 
 /**
- * https://blog.csdn.net/jinzeyu_cn/article/details/45795923
+ * 之前把.h和.cpp分离，无法链接
+ * 参考https://blog.csdn.net/jinzeyu_cn/article/details/45795923
  * 因为模板类需要在使用到的地方利用声明模板的typename或者class参数的时候，才会即时生成代码。
  * 那么当我把模板声明和实现分开的时候，这个即时过程因为编译器只能通过代码include“看到”头文件而找不到模板实现代码，所以会产生链接问题。
  * 这也是为什么几乎都会建议模板类和声明和实现都写在头文件。
