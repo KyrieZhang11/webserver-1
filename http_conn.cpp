@@ -74,7 +74,7 @@ bool http_conn::read() {
         }
         read_index += bytes_read;
     }
-    printf("%s", read_buf);
+    // printf("%s", read_buf);
     return true;
 }
 
@@ -107,7 +107,7 @@ http_conn::HTTP_CODE http_conn::process_read() {
         // 获取一行数据
         text = get_line();
         start_line = checked_index;
-        printf( "http line: %s\n", text );
+        printf( "%s\n", text );
 
         switch ( check_state ) {
             case CHECK_STATE_REQUESTLINE: {
@@ -122,6 +122,7 @@ http_conn::HTTP_CODE http_conn::process_read() {
                 if ( ret == BAD_REQUEST ) {
                     return BAD_REQUEST;
                 } else if ( ret == GET_REQUEST ) {
+                    // 没有请求体
                     return do_request();
                 }
                 break;
@@ -199,6 +200,9 @@ http_conn::HTTP_CODE http_conn::parse_request_line(char* text) {
         // 在参数 str 所指向的字符串中搜索第一次出现字符 c（一个无符号字符）的位置。
         url = strchr( url, '/' );
     }
+    // 设置默认主页
+    if(strcmp(url, "/") == 0)
+            url = (char*)("/index.html");
     if ( !url || url[0] != '/' ) {
         return BAD_REQUEST;
     }
@@ -209,13 +213,13 @@ http_conn::HTTP_CODE http_conn::parse_request_line(char* text) {
 http_conn::HTTP_CODE http_conn::parse_headers(char* text) {   
     // 遇到空行，表示头部字段解析完毕
     if( text[0] == '\0' ) {
-        // 如果HTTP请求有消息体，则还需要读取m_content_length字节的消息体，
+        // 如果HTTP请求有消息体，则还需要读取content_length字节的消息体，
         // 状态机转移到CHECK_STATE_CONTENT状态
         if ( content_length != 0 ) {
             check_state = CHECK_STATE_CONTENT;
             return NO_REQUEST;
         }
-        // 否则说明我们已经得到了一个完整的HTTP请求
+        // 否则说明没有请求体，我们已经得到了一个完整的HTTP请求
         return GET_REQUEST;
     } else if ( strncasecmp( text, "Connection:", 11 ) == 0 ) {
         // 处理Connection 头部字段  Connection: keep-alive
@@ -235,7 +239,7 @@ http_conn::HTTP_CODE http_conn::parse_headers(char* text) {
         text += strspn( text, " \t" );
         host = text;
     } else {
-        printf( "Unknow header %s\n", text );
+        // printf( "%s\n", text );
     }
     return NO_REQUEST;
 }
@@ -252,7 +256,7 @@ http_conn::HTTP_CODE http_conn::parse_content( char* text ) {
 /**
  * 当得到一个完整、正确的HTTP请求时，我们就分析目标文件的属性，
  * 如果目标文件存在、对所有用户可读，且不是目录，则使用mmap将其
- * 映射到内存地址m_file_address处，并告诉调用者获取文件成功
+ * 映射到内存地址file_address处，并告诉调用者获取文件成功
 **/
 http_conn::HTTP_CODE http_conn::do_request()
 {
@@ -330,7 +334,9 @@ bool http_conn::write()
     }
 }
 
-bool http_conn::add_response( const char* format, ... ) {
+bool http_conn::
+
+add_response( const char* format, ... ) {
     if( write_index >= WRITE_BUFFER_SIZE ) {
         return false;
     }
